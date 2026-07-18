@@ -1,12 +1,1 @@
-{
-  "keys": [
-    {
-      "use": "sig",
-      "kty": "RSA",
-      "kid": "REPLACE_WITH_REAL_KID_FROM_APISERVER",
-      "alg": "RS256",
-      "n": "REPLACE_WITH_REAL_MODULUS_FROM_APISERVER",
-      "e": "AQAB"
-    }
-  ]
-}
+{"keys":[{"use":"sig","kty":"RSA","kid":"fuXUikIcrkKUuKb_mKYGRbYgwzCxG04O3kVt2PEn1IE","alg":"RS256","n":"0teITnKEJ-8uGNWjCrvzJ7lMLHagL-ZGl16UvnMQgRGmokfX0NOfX0jYpuaeGT35EzbhTvofqD38z6OSIDO1SajkZBG3Szt3-Sc7HEvTAtf7VYL80yuPGZZoBkW4jebIT618jm5-ChkzmOE391YkVABImA1FwBIAZqrhk8vkARo5hnk3Re764ulTvkLYvxogAK5uLuDqPSRGr5aOTwn_lkl0F3Qn-3YEfqkals5md5oQnTIMFr0qk0bQdrEPkcWeiPnb1vo_5-F7jAxxg0NdCpZdMVMLMZhCx8CduR5aQ5Pfmbq7Q0phukc_RQukLbjO7R8Q4EsWywYzbJQ3no9zqQ","e":"AQAB"}]}

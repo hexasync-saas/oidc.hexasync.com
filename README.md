@@ -32,13 +32,23 @@ oidc.hexasync.com/
 The `/rke2-onprem` path segment **is** the issuer:
 `service-account-issuer=https://oidc.hexasync.com/rke2-onprem`.
 
-## ⚠️ The committed JSON is a PLACEHOLDER
+## State of the committed JSON
 
-`rke2-onprem/openid/v1/jwks` ships with `REPLACE_WITH_REAL_*` values. Replace both files with the
-**verbatim dump from the live RKE2 API server**, so the `issuer` / `jwks_uri` baked inside and the
-real signing keys match the cluster exactly.
+- `rke2-onprem/openid/v1/jwks` — **REAL public signing key** dumped from the bhs01 (OVH
+  Beauharnois) RKE2 API server (`kid=fuXUikIcrkKUuKb_mKYGRbYgwzCxG04O3kVt2PEn1IE`, RS256). Public,
+  non-secret; stable unless the cluster's SA signing keys are rotated.
+- `rke2-onprem/.well-known/openid-configuration` — carries the **target** issuer
+  `https://oidc.hexasync.com/rke2-onprem`. This is exactly what the API server will emit **once the
+  issuer cutover below is applied**.
 
-### Regenerate from the cluster
+> ⚠️ **Not live yet.** The bhs01 API server currently issues SA tokens with
+> `iss=https://kubernetes.default.svc.cluster.local`. Entra federation only works after the
+> apiserver is reconfigured to issue `iss=https://oidc.hexasync.com/rke2-onprem` **and** DNS +
+> hosting for `oidc.hexasync.com` point at a host that serves these files over a CA-valid cert.
+> Today `oidc.hexasync.com` → `20.120.196.31` (an nginx k8s ingress serving a fake cert, 404 on the
+> OIDC path). Both are production-impacting cutover steps — see below.
+
+### Re-dump from the cluster (after the issuer cutover)
 
 ```bash
 # 0) apiserver args must already point at this host (then: systemctl restart rke2-server):

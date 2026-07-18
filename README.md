@@ -72,11 +72,24 @@ grep -o '"jwks_uri":"[^"]*"' rke2-onprem/.well-known/openid-configuration
 git add -A && git commit -m "chore: publish rke2-onprem OIDC discovery + JWKS from apiserver" && git push
 ```
 
-## GitHub Pages setup
+## Go-live checklist (two production cutover steps remain)
 
+The repo + Pages are wired and **already serving** at GitHub's edge (verified via
+`--resolve oidc.hexasync.com:443:185.199.108.153`). What's left is production-impacting:
+
+1. **DNS (Cloudflare, zone `hexasync.com`).** Today `oidc.hexasync.com` → `20.120.196.31` (an Azure
+   nginx k8s ingress, fake cert, 404 on the OIDC path). Repoint it:
+   - Delete the current `oidc` A/CNAME record.
+   - Add `CNAME  oidc  →  hexasync-saas.github.io`  (**DNS-only / grey cloud** — GitHub must serve
+     the cert and terminate TLS; Cloudflare proxy would break Pages cert issuance).
+   - GitHub → repo Settings → Pages → Custom domain `oidc.hexasync.com` → wait for the green check →
+     tick **Enforce HTTPS** (Let's Encrypt provisions in a few minutes).
+2. **RKE2 issuer cutover** — see [`docs/rke2-issuer-cutover.md`](docs/rke2-issuer-cutover.md).
+   Restarts the bhs01 control plane; run in a maintenance window. Prepared, **not applied**.
+
+### Pages source (already configured)
 - Settings → Pages → Source: **Deploy from branch** `main` / `(root)`.
-- Settings → Pages → Custom domain: `oidc.hexasync.com` → tick **Enforce HTTPS**.
-- DNS → `CNAME  oidc.hexasync.com → hexasync-saas.github.io`.
+- Custom domain `oidc.hexasync.com` set via the `CNAME` file.
 
 ### Gotchas
 

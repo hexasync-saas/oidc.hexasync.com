@@ -1,0 +1,15 @@
+# Append to  /etc/rancher/rke2/config.yaml  on EACH control-plane node, then restart rke2-server.
+# bhs01 (OVH Beauharnois) control-plane nodes: dbcoord001 (.201), dbcoord002 (.202), worker001 (.1)
+#
+# Dual-issuer migration: the PUBLIC issuer is listed FIRST so new tokens (incl. the Azure WI
+# audience api://AzureADTokenExchange) carry iss=https://oidc.hexasync.com/rke2-onprem, while the
+# legacy cluster issuer is kept SECOND so existing in-cluster tokens still validate during rollover.
+#
+# NOTE: RKE2 also injects its own default --service-account-issuer. After restart you MUST verify
+# (see docs/rke2-issuer-cutover.md) that the discovery `issuer` resolves to the public URL. If the
+# RKE2 default wins primary, pin it explicitly per the runbook before proceeding.
+
+kube-apiserver-arg:
+  - "service-account-issuer=https://oidc.hexasync.com/rke2-onprem"
+  - "service-account-issuer=https://kubernetes.default.svc.cluster.local"
+  - "service-account-jwks-uri=https://oidc.hexasync.com/rke2-onprem/openid/v1/jwks"
